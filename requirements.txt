@@ -1,0 +1,12 @@
+Django
+django-allauth
+django-tailwind
+django-htmx
+django-crispy-forms
+crispy-tailwind
+python-dotenv
+whitenoise
+gunicorn
+stripe
+dj-database-url
+ruff
