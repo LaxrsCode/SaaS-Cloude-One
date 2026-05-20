@@ -1,6 +1,3 @@
-import hashlib
-import secrets
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -47,9 +44,6 @@ def settings(request):
         messages.success(request, 'Settings updated successfully.')
         return redirect('dashboard:settings')
 
-    # Check if a new API key was just generated (stored in session)
-    new_api_key = request.session.pop('new_api_key', None)
-
     context = {
         'notification_settings': {
             'comments': user_settings.notify_comments,
@@ -66,31 +60,8 @@ def settings(request):
             'end_date': user_settings.subscription_end_date,
             'trial_end_date': user_settings.trial_end_date,
         },
-        'api': {
-            'has_key': bool(user_settings.api_key_hash),
-            'key_prefix': user_settings.api_key_prefix,
-            'key_created_at': user_settings.api_key_created_at,
-            'new_key': new_api_key,
-        },
     }
     return render(request, 'dashboard/settings.html', context)
-
-@login_required
-@require_http_methods(['POST'])
-def generate_api_key(request):
-    user_settings, created = UserSettings.objects.get_or_create(user=request.user)
-
-    api_key = secrets.token_urlsafe(32)
-    user_settings.api_key_hash = hashlib.sha256(api_key.encode()).hexdigest()
-    user_settings.api_key_prefix = api_key[:8]
-    user_settings.api_key_created_at = timezone.now()
-    user_settings.save()
-
-    # Store the key in session so it can be shown once on the settings page
-    request.session['new_api_key'] = api_key
-
-    messages.success(request, 'API key generated. Copy it now — it won\'t be shown again.')
-    return redirect('dashboard:settings')
 
 @login_required
 @require_http_methods(['GET'])

@@ -138,49 +138,6 @@
             </div>
         </div>
         {% endif %}
-
-        <div class="divide-y divide-light-gray">
-            <div class="px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-9 h-9 bg-[#fafafa] rounded flex items-center justify-center">
-                        <i class="fa-solid fa-key text-gray text-xs"></i>
-                    </div>
-                    <div>
-                        {% if api.has_key %}
-                            <p class="text-sm text-black">API key active <span class="font-mono text-gray ml-1">{{ api.key_prefix }}…</span></p>
-                            <p class="text-xs text-gray mt-0.5">Generated {{ api.key_created_at|date:"M d, Y \a\t g:i A" }}</p>
-                        {% else %}
-                            <p class="text-sm text-black">No API key</p>
-                            <p class="text-xs text-gray mt-0.5">Generate a key to access the API programmatically.</p>
-                        {% endif %}
-                    </div>
-                </div>
-                <form action="{% url 'dashboard:generate_api_key' %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">
-                        {% if api.has_key %}Regenerate{% else %}Generate key{% endif %}
-                    </button>
-                </form>
-            </div>
-            <div class="px-6 py-4 flex items-center gap-4">
-                <div class="w-9 h-9 bg-[#fafafa] rounded flex items-center justify-center">
-                    <i class="fa-solid fa-book text-gray text-xs"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-black">API documentation</p>
-                    <p class="text-xs text-gray mt-0.5">Learn how to integrate with our API.</p>
-                </div>
-            </div>
-            <div class="px-6 py-4 flex items-center gap-4">
-                <div class="w-9 h-9 bg-[#fafafa] rounded flex items-center justify-center">
-                    <i class="fa-solid fa-plug text-gray text-xs"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-black">Webhooks</p>
-                    <p class="text-xs text-gray mt-0.5">No webhooks configured.</p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
