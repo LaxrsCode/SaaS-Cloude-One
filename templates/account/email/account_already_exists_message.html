@@ -1,0 +1,20 @@
+{% extends "account/email/base_email.html" %}
+
+{% block email_heading %}Cuenta ya registrada{% endblock %}
+
+{% block email_body %}
+<p style="margin:0 0 16px;">Hola,</p>
+<p style="margin:0 0 16px;">
+  Intentaron crear una cuenta en <strong>{{ current_site.name }}</strong> con el correo
+  <strong>{{ email }}</strong>, pero ese correo ya está registrado.
+</p>
+<p style="margin:0 0 16px;">
+  Si ya tienes cuenta y olvidaste tu contraseña, puedes recuperarla aquí:
+</p>
+
+{% include "account/email/_button.html" with href=password_reset_url label="Recuperar contraseña" %}
+
+<p style="margin:0;font-size:13px;color:#4a4a4a;">
+  Si no fuiste tú, ignora este mensaje.
+</p>
+{% endblock %}

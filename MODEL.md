@@ -131,6 +131,8 @@ class BusinessSettings(models.Model):
     working_hours   — JSONField(default=dict) — ej: {"mon": {"open": "09:00", "close": "18:00"}, ...}
     timezone        — CharField(max_length=50, default='America/Santo_Domingo')
     currency        — CharField(max_length=3, default='DOP')
+    google_calendar_enabled — BooleanField(default=False)
+    google_calendar_id      — CharField(max_length=255, blank=True)
 
 class BusinessMember(models.Model):
     ROLE_CHOICES = [
@@ -218,6 +220,7 @@ class Booking(models.Model):
     status          — CharField(choices=STATUS_CHOICES, default='pending')
     notes           — TextField(blank)
     client_notes    — TextField(blank)
+    google_event_id — CharField(max_length=255, blank=True) — ID del evento en Google Calendar
     created_at      — DateTimeField(auto_now_add)
     updated_at      — DateTimeField(auto_now)
 ```
@@ -257,45 +260,57 @@ class ClientNote(models.Model):
 
 ### `apps.notifications` — Notificaciones
 
-> **Fase 5 del plan.** Sistema de alertas y recordatorios.
+> **Fase 5 del plan.** Notificaciones internas del SaaS + registro de emails de recordatorio.
 
 | Modelo | Descripción |
 |--------|-------------|
-| **NotificationTemplate** | Plantillas de email personalizables por negocio. |
-| **NotificationLog** | Registro de notificaciones enviadas. |
+| **Notification** | Notificaciones internas del SaaS para el usuario (bandeja de notificaciones en el dashboard). |
+| **EmailReminder** | Registro de emails de recordatorio enviados (plantillas HTML hardcodeadas del SaaS). |
 
 ```python
-class NotificationTemplate(models.Model):
+class Notification(models.Model):
     TYPE_CHOICES = [
-        ('booking_confirmation', 'Booking Confirmation'),
-        ('booking_reminder_24h', 'Booking Reminder 24h'),
-        ('booking_reminder_1h', 'Booking Reminder 1h'),
+        ('booking_new', 'New Booking Received'),
         ('booking_cancelled', 'Booking Cancelled'),
-        ('booking_completed', 'Booking Completed'),
+        ('subscription_renewed', 'Subscription Renewed'),
+        ('trial_expiring', 'Trial Expiring Soon'),
+        ('system_announcement', 'System Announcement'),
     ]
-    business        — ForeignKey(Business, related_name='notification_templates', on_delete=CASCADE)
-    type            — CharField(choices=TYPE_CHOICES)
-    subject         — CharField(max_length=300)
-    body            — TextField()
-    is_active       — BooleanField(default=True)
-    created_at      — DateTimeField(auto_now_add)
-    updated_at      — DateTimeField(auto_now)
+    user        — ForeignKey(CustomUser, related_name='notifications', on_delete=CASCADE)
+    business    — ForeignKey(Business, null=True, on_delete=SET_NULL)
+    type        — CharField(choices=TYPE_CHOICES)
+    title       — CharField(max_length=200)
+    message     — TextField()
+    is_read     — BooleanField(default=False)
+    link        — CharField(max_length=500, blank) — URL al hacer clic
+    created_at  — DateTimeField(auto_now_add)
 
-class NotificationLog(models.Model):
+class EmailReminder(models.Model):
+    TYPE_CHOICES = [
+        ('confirmation', 'Booking Confirmation'),
+        ('reminder_24h', '24h Reminder'),
+        ('reminder_1h', '1h Reminder'),
+        ('cancelled', 'Cancellation Notice'),
+        ('completed', 'Completion Notice'),
+    ]
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('sent', 'Sent'),
         ('failed', 'Failed'),
     ]
-    business        — ForeignKey(Business, on_delete=CASCADE)
+    booking         — ForeignKey(Booking, related_name='email_reminders', on_delete=CASCADE)
+    type            — CharField(choices=TYPE_CHOICES)
     recipient_email — EmailField()
-    template        — ForeignKey(NotificationTemplate, on_delete=SET_NULL, null=True)
-    booking         — ForeignKey(Booking, on_delete=SET_NULL, null=True, blank)
     status          — CharField(choices=STATUS_CHOICES, default='pending')
     sent_at         — DateTimeField(null, blank)
     error_message   — TextField(blank)
     created_at      — DateTimeField(auto_now_add)
+
+    class Meta:
+        unique_together = ('booking', 'type') — evita duplicados
 ```
+
+**Nota:** Las plantillas HTML de los emails son hardcodeadas en el SaaS (no personalizables por el negocio). Se renderizan con Django templates en `templates/emails/`.
 
 ---
 
@@ -306,16 +321,15 @@ CustomUser
     ├── owned_businesses → Business (owner)
     ├── business_memberships → BusinessMember
     ├── settings → UserSettings
-    └── stripe_customer → StripeCustomer
+    ├── stripe_customer → StripeCustomer
+    └── notifications → Notification (bandeja personal)
 
 Business
     ├── settings → BusinessSettings
     ├── members → BusinessMember → Staff
     ├── services → Service → StaffService
     ├── clients → Client → ClientNote
-    ├── bookings → Booking
-    ├── notification_templates → NotificationTemplate
-    └── notification_log → NotificationLog
+    └── bookings → Booking → EmailReminder
 
 Booking
     └── client → Client

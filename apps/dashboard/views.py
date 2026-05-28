@@ -102,7 +102,7 @@ def subscribe_to_plan(request, plan_slug):
 
     user_settings.save()
 
-    send_subscription_confirmation_email.enqueue(
+    send_subscription_confirmation_email.delay(
         user_email=request.user.email,
         plan_name=plan.name,
     )
@@ -122,7 +122,7 @@ def cancel_subscription(request):
     user_settings.subscription_status = 'cancelled'
     user_settings.save()
 
-    send_subscription_cancellation_email.enqueue(user_email=request.user.email)
+    send_subscription_cancellation_email.delay(user_email=request.user.email)
 
     messages.success(request, 'Your subscription has been cancelled.')
     return redirect('dashboard:settings')
@@ -141,7 +141,7 @@ def start_trial(request):
     user_settings.trial_end_date = timezone.now() + timezone.timedelta(days=14)
     user_settings.save()
 
-    send_trial_started_email.enqueue(user_email=request.user.email)
+    send_trial_started_email.delay(user_email=request.user.email)
 
     messages.success(request, 'Trial period started successfully.')
     return redirect('dashboard:settings')
