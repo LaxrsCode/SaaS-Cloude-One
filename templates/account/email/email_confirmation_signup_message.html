@@ -1,0 +1,24 @@
+{% extends "account/email/base_email.html" %}
+{% load account %}
+
+{% block email_heading %}Confirma tu correo{% endblock %}
+
+{% block email_body %}
+<p style="margin:0 0 16px;">Hola,</p>
+<p style="margin:0 0 16px;">
+  Gracias por registrarte en <strong>{{ current_site.name }}</strong>.
+  Para activar tu cuenta, confirma que este correo te pertenece.
+</p>
+
+{% if code %}
+<p style="margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;color:#4a4a4a;">Código de verificación</p>
+<p style="margin:0 0 24px;font-size:28px;font-weight:600;letter-spacing:0.2em;color:#121212;">{{ code }}</p>
+<p style="margin:0;">Introduce este código en la ventana del navegador donde te registraste.</p>
+{% else %}
+{% include "account/email/_button.html" with href=activate_url label="Confirmar correo" %}
+<p style="margin:0;font-size:13px;color:#4a4a4a;word-break:break-all;">
+  Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+  <a href="{{ activate_url }}" style="color:#121212;">{{ activate_url }}</a>
+</p>
+{% endif %}
+{% endblock %}
