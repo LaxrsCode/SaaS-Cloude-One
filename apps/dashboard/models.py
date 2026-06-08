@@ -6,6 +6,9 @@ from django.utils import timezone
 class SubscriptionPlan(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    stripe_price_id = models.CharField(max_length=255, blank=True)  # identificador del precio en stripe
+    stripe_product_id = models.CharField(max_length=255, blank=True)  # identificador del producto en stripe
+    trial_days = models.IntegerField(default=14) # dias de prueba
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     interval = models.CharField(
