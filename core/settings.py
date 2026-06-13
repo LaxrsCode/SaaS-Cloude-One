@@ -35,6 +35,7 @@ DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+MAIN_DOMAIN = os.getenv('MAIN_DOMAIN', 'localhost')
 
 # Application definition
 
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
     'apps.landing',
     'apps.dashboard',
     'apps.subscriptions',
+    'apps.tenants',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -78,6 +80,7 @@ MIDDLEWARE = [
     'django.middleware.csp.ContentSecurityPolicyMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'apps.tenants.middleware.TenantMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
