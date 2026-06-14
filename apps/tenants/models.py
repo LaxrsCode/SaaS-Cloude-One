@@ -3,9 +3,9 @@ from django.conf import settings
 # Create your models here.
 
 class Business(models.Model):
-    name            = models.CharField(max_length=200)
-    slug            = models.SlugField(unique=True) 
-    subdomain       = models.CharField(max_length=100, unique=True, blank=True)
+    name            = models.CharField(max_length=200, unique=True)
+    slug            = models.SlugField(unique=True, blank=True) 
+    subdomain       = models.CharField(max_length=100, unique=True, blank=True, null=True)
     description     = models.TextField(blank=True)
     category        = models.CharField(
         choices=[
