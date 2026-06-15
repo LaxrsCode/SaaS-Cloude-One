@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'apps.dashboard',
     'apps.subscriptions',
     'apps.tenants',
+    'apps.bookings',
+    'apps.clients'
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
