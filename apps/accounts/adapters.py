@@ -1,8 +1,7 @@
-from django.contrib.sites.shortcuts import get_current_site
-from django.db import transaction
-
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.core import context as allauth_context
+from django.contrib.sites.shortcuts import get_current_site
+from django.db import transaction
 
 from .tasks import send_allauth_email
 

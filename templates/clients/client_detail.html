@@ -1,0 +1,94 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ client.first_name }} {{ client.last_name }} | SaaS{% endblock %}
+{% block page_title %}{{ client.first_name }} {{ client.last_name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div>
+        <a href="{% url 'clients:client_list' business_slug=business.slug %}" class="text-sm text-gray hover:text-black">&larr; Back to clients</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="border border-light-gray bg-white p-4 rounded">
+            <p class="text-xs text-gray uppercase tracking-wider">Email</p>
+            <p class="text-sm font-medium mt-1">{{ client.email|default:'—' }}</p>
+        </div>
+        <div class="border border-light-gray bg-white p-4 rounded">
+            <p class="text-xs text-gray uppercase tracking-wider">Phone</p>
+            <p class="text-sm font-medium mt-1">{{ client.phone|default:'—' }}</p>
+        </div>
+        <div class="border border-light-gray bg-white p-4 rounded">
+            <p class="text-xs text-gray uppercase tracking-wider">Total Visits</p>
+            <p class="text-sm font-medium mt-1">{{ client.total_visits }}</p>
+        </div>
+    </div>
+
+    <form method="POST" action="{% url 'clients:client_edit' business_slug=business.slug client_id=client.id %}" class="border border-light-gray bg-white p-6 rounded space-y-4">
+        {% csrf_token %}
+        <h2 class="text-sm font-medium">Edit Client</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="first_name" class="block text-sm text-black mb-1">First Name</label>
+                <input type="text" name="first_name" id="first_name" value="{{ client.first_name }}" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            </div>
+            <div>
+                <label for="last_name" class="block text-sm text-black mb-1">Last Name</label>
+                <input type="text" name="last_name" id="last_name" value="{{ client.last_name }}" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="email" class="block text-sm text-black mb-1">Email</label>
+                <input type="email" name="email" id="email" value="{{ client.email }}" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            </div>
+            <div>
+                <label for="phone" class="block text-sm text-black mb-1">Phone</label>
+                <input type="text" name="phone" id="phone" value="{{ client.phone }}" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            </div>
+        </div>
+        <div>
+            <label for="notes" class="block text-sm text-black mb-1">Notes</label>
+            <textarea name="notes" id="notes" rows="2" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">{{ client.notes }}</textarea>
+        </div>
+        <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">Save Changes</button>
+    </form>
+
+    <div class="border border-light-gray bg-white p-6 rounded">
+        <h2 class="text-sm font-medium mb-4">Booking History</h2>
+        <div class="space-y-2">
+            {% for booking in bookings %}
+                <div class="flex items-center justify-between py-2 border-b border-light-gray last:border-0">
+                    <div>
+                        <p class="text-sm">{{ booking.service.name }} &middot; {{ booking.staff }}</p>
+                        <p class="text-xs text-gray">{{ booking.start_datetime|date:"M j, Y g:i A" }}</p>
+                    </div>
+                    <span class="text-xs px-2 py-0.5 rounded {% if booking.status == 'completed' %}bg-light-gray text-gray{% elif booking.status == 'confirmed' %}bg-black text-white{% else %}bg-red-100 text-red-600{% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="text-sm text-gray text-center py-4">No booking history.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="border border-light-gray bg-white p-6 rounded">
+        <h2 class="text-sm font-medium mb-4">Notes</h2>
+        <form method="POST" class="flex gap-2 mb-4">
+            {% csrf_token %}
+            <input type="text" name="note" placeholder="Add a note..." required class="flex-1 border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">Add</button>
+        </form>
+        <div class="space-y-2">
+            {% for note in notes %}
+                <div class="py-2 border-b border-light-gray last:border-0">
+                    <p class="text-sm">{{ note.content }}</p>
+                    <p class="text-xs text-gray mt-0.5">{{ note.author.email }} &middot; {{ note.created_at|date:"M j, Y g:i A" }}</p>
+                </div>
+            {% empty %}
+                <p class="text-sm text-gray text-center py-4">No notes yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -124,7 +124,6 @@
         </div>
 
         {% if api.new_key %}
-        <!-- Show newly generated key -->
         <div class="px-6 py-4 bg-[#fafafa] border-b border-light-gray">
             <div class="flex items-start gap-3">
                 <div class="w-9 h-9 bg-black rounded flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -138,6 +137,30 @@
             </div>
         </div>
         {% endif %}
+
+        <div class="px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-9 h-9 bg-[#fafafa] rounded flex items-center justify-center">
+                    <i class="fa-solid fa-key text-gray text-xs"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-black">API Key</p>
+                    <p class="text-xs text-gray mt-0.5">
+                        {% if api.has_key %}
+                            Active &middot; Key starts with <code class="font-mono">{{ api.key_prefix }}...</code>
+                        {% else %}
+                            No API key generated yet
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <form method="POST" action="{% url 'dashboard:generate_api_key' %}">
+                {% csrf_token %}
+                <button type="submit" class="text-sm px-4 py-1.5 bg-black text-white rounded hover:bg-dark-gray transition-colors">
+                    {% if api.has_key %}Regenerate{% else %}Generate{% endif %}
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Availability | {{ business.name }}{% endblock %}
+{% block page_title %}Availability - {{ staff.member.user.get_full_name|default:staff.member.user.email }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <a href="{% url 'bookings:staff_list' business_slug=business.slug %}" class="text-sm text-gray hover:text-black">&larr; Back to staff</a>
+
+    <form method="POST" class="border border-light-gray bg-white p-6 rounded space-y-4">
+        {% csrf_token %}
+        <p class="text-xs text-gray">Set the weekly availability for this staff member. Leave fields empty to remove a slot.</p>
+
+        <div id="slots-container" class="space-y-3">
+            {% if slots %}
+                {% for slot in slots %}
+                    <div class="flex items-center gap-2 slot-row">
+                        <select name="day_of_week" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                            {% for value, label in day_choices %}
+                                <option value="{{ value }}" {% if slot.day_of_week == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="time" name="start_time" value="{{ slot.start_time|time:'H:i' }}" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                        <span class="text-gray text-xs">to</span>
+                        <input type="time" name="end_time" value="{{ slot.end_time|time:'H:i' }}" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                        <button type="button" class="text-gray hover:text-black text-xs px-2" onclick="this.closest('.slot-row').remove()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="flex items-center gap-2 slot-row">
+                    <select name="day_of_week" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                        {% for value, label in day_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="time" name="start_time" value="09:00" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                    <span class="text-gray text-xs">to</span>
+                    <input type="time" name="end_time" value="17:00" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                    <button type="button" class="text-gray hover:text-black text-xs px-2" onclick="this.closest('.slot-row').remove()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="button" onclick="addSlot()" class="text-sm text-gray hover:text-black"><i class="fa-solid fa-plus mr-1"></i> Add time slot</button>
+
+        <div class="pt-2">
+            <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">Save Availability</button>
+        </div>
+    </form>
+</div>
+
+<script nonce="{{ csp_nonce }}">
+function addSlot() {
+    const container = document.getElementById('slots-container');
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2 slot-row';
+    row.innerHTML = `
+        <select name="day_of_week" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            {% for value, label in day_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+        <input type="time" name="start_time" value="09:00" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+        <span class="text-gray text-xs">to</span>
+        <input type="time" name="end_time" value="17:00" class="border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+        <button type="button" class="text-gray hover:text-black text-xs px-2" onclick="this.closest('.slot-row').remove()"><i class="fa-solid fa-xmark"></i></button>
+    `;
+    container.appendChild(row);
+}
+</script>
+{% endblock %}

@@ -64,6 +64,10 @@ class UserSettings(models.Model):
     subscription_end_date = models.DateTimeField(null=True, blank=True)
     trial_end_date = models.DateTimeField(null=True, blank=True)
 
+    # API key management
+    api_key_hash = models.CharField(max_length=64, blank=True, default='')
+    api_key_prefix = models.CharField(max_length=12, blank=True, default='')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

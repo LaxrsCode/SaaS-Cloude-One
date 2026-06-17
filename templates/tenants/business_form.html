@@ -1,0 +1,27 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Create Business | SaaS{% endblock %}
+{% block page_title %}Create Business{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-2xl mx-auto">
+    <form method="POST" class="border border-light-gray bg-white p-6 rounded space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="name" class="block text-sm font-medium text-black mb-1">Business Name</label>
+            <input type="text" name="name" id="name" required placeholder="My Business" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+        </div>
+        <div>
+            <label for="category" class="block text-sm font-medium text-black mb-1">Category</label>
+            <select name="category" id="category" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                {% for value, label in categories %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex items-center gap-3 pt-2">
+            <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90 transition-opacity">Create Business</button>
+            <a href="{% url 'tenants:business_list' %}" class="text-sm text-gray hover:text-black">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

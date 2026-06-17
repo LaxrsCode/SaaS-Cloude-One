@@ -1,0 +1,70 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ business.name }} | SaaS{% endblock %}
+{% block page_title %}{{ business.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="border border-light-gray bg-white p-4 rounded">
+            <p class="text-xs text-gray uppercase tracking-wider">Category</p>
+            <p class="text-sm font-medium mt-1">{{ business.get_category_display }}</p>
+        </div>
+        <div class="border border-light-gray bg-white p-4 rounded">
+            <p class="text-xs text-gray uppercase tracking-wider">Plan</p>
+            <p class="text-sm font-medium mt-1">{{ business.subscription_tier|title }}</p>
+        </div>
+        <div class="border border-light-gray bg-white p-4 rounded">
+            <p class="text-xs text-gray uppercase tracking-wider">Status</p>
+            <p class="text-sm font-medium mt-1">{% if business.is_active %}Active{% else %}Inactive{% endif %}</p>
+        </div>
+    </div>
+
+    <div class="border border-light-gray bg-white p-6 rounded">
+        <h2 class="text-sm font-medium mb-4">Team Members ({{ members|length }})</h2>
+        <div class="space-y-2">
+            {% for member in members %}
+                <div class="flex items-center justify-between py-2 border-b border-light-gray last:border-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-black flex items-center justify-center text-white text-xs font-medium rounded">
+                            {{ member.user.email|first|upper }}
+                        </div>
+                        <div>
+                            <p class="text-sm">{{ member.user.email }}</p>
+                            <p class="text-xs text-gray">{{ member.get_role_display }}</p>
+                        </div>
+                    </div>
+                    {% if business.owner == request.user and member.role != 'owner' %}
+                        <form method="POST" action="{% url 'tenants:business_remove_member' slug=business.slug member_id=member.id %}" onsubmit="return confirm('Remove this member?')">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs text-gray hover:text-black"><i class="fa-solid fa-xmark"></i></button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="{% url 'bookings:service_list' business_slug=business.slug %}" class="border border-light-gray bg-white p-4 rounded hover:border-gray transition-colors">
+            <i class="fa-solid fa-scissors text-lg mb-2"></i>
+            <h3 class="text-sm font-medium">Services ({{ services|length }})</h3>
+            <p class="text-xs text-gray mt-1">Manage your service offerings</p>
+        </a>
+        <a href="{% url 'bookings:staff_list' business_slug=business.slug %}" class="border border-light-gray bg-white p-4 rounded hover:border-gray transition-colors">
+            <i class="fa-solid fa-user-tie text-lg mb-2"></i>
+            <h3 class="text-sm font-medium">Staff ({{ staff|length }})</h3>
+            <p class="text-xs text-gray mt-1">Manage your team and schedules</p>
+        </a>
+        <a href="{% url 'clients:client_list' business_slug=business.slug %}" class="border border-light-gray bg-white p-4 rounded hover:border-gray transition-colors">
+            <i class="fa-solid fa-users text-lg mb-2"></i>
+            <h3 class="text-sm font-medium">Clients</h3>
+            <p class="text-xs text-gray mt-1">View and manage your clients</p>
+        </a>
+        <a href="{% url 'bookings:booking_list' business_slug=business.slug %}" class="border border-light-gray bg-white p-4 rounded hover:border-gray transition-colors">
+            <i class="fa-solid fa-calendar text-lg mb-2"></i>
+            <h3 class="text-sm font-medium">Bookings</h3>
+            <p class="text-xs text-gray mt-1">View upcoming appointments</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}New Booking | {{ business.name }}{% endblock %}
+{% block page_title %}New Booking{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-2xl mx-auto">
+    <form method="POST" class="border border-light-gray bg-white p-6 rounded space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="client" class="block text-sm font-medium text-black mb-1">Client</label>
+            <select name="client" id="client" required class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                <option value="">Select a client...</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.first_name }} {{ client.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="service" class="block text-sm font-medium text-black mb-1">Service</label>
+            <select name="service" id="service" required class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                <option value="">Select a service...</option>
+                {% for service in services %}
+                    <option value="{{ service.id }}" data-duration="{{ service.duration }}">{{ service.name }} ({{ service.duration }}min - ${{ service.price }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="staff" class="block text-sm font-medium text-black mb-1">Staff</label>
+            <select name="staff" id="staff" required class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                <option value="">Select staff...</option>
+                {% for member in staff_members %}
+                    <option value="{{ member.id }}">{{ member.member.user.get_full_name|default:member.member.user.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="start_datetime" class="block text-sm font-medium text-black mb-1">Date & Time</label>
+            <input type="datetime-local" name="start_datetime" id="start_datetime" required class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+        </div>
+        <div>
+            <label for="notes" class="block text-sm font-medium text-black mb-1">Notes</label>
+            <textarea name="notes" id="notes" rows="2" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray"></textarea>
+        </div>
+        <div class="flex items-center gap-3 pt-2">
+            <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">Create Booking</button>
+            <a href="{% url 'bookings:booking_list' business_slug=business.slug %}" class="text-sm text-gray hover:text-black">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

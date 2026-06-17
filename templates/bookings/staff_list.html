@@ -1,0 +1,59 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Staff | {{ business.name }}{% endblock %}
+{% block page_title %}Staff - {{ business.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <a href="{% url 'tenants:business_detail' slug=business.slug %}" class="text-sm text-gray hover:text-black">&larr; Back to {{ business.name }}</a>
+    </div>
+
+    <div class="border border-light-gray bg-white p-6 rounded">
+        <h2 class="text-sm font-medium mb-4">Staff Members ({{ staff_members|length }})</h2>
+        <div class="space-y-2">
+            {% for member in staff_members %}
+                <div class="flex items-center justify-between py-2 border-b border-light-gray last:border-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-black flex items-center justify-center text-white text-xs font-medium rounded">
+                            {{ member.member.user.email|first|upper }}
+                        </div>
+                        <div>
+                            <p class="text-sm">{{ member.member.user.get_full_name|default:member.member.user.email }}</p>
+                            <p class="text-xs text-gray">{{ member.member.get_role_display }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'bookings:availability_manage' business_slug=business.slug staff_id=member.id %}" class="text-xs px-3 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-gray">
+                            <i class="fa-solid fa-clock mr-1"></i> Availability
+                        </a>
+                        <form method="POST" action="{% url 'bookings:staff_toggle_active' business_slug=business.slug staff_id=member.id %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs px-2 py-1.5 rounded {% if member.is_active %}bg-light-gray text-gray{% else %}bg-black text-white{% endif %}">
+                                {{ member.is_active|yesno:"Deactivate,Activate" }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-sm text-gray text-center py-4">No staff members yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if available_members %}
+        <div class="border border-light-gray bg-white p-6 rounded">
+            <h2 class="text-sm font-medium mb-4">Add Staff from Team Members</h2>
+            <form method="POST" action="{% url 'bookings:staff_create' business_slug=business.slug %}" class="flex gap-2">
+                {% csrf_token %}
+                <select name="member_id" required class="flex-1 border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+                    <option value="">Select a team member...</option>
+                    {% for member in available_members %}
+                        <option value="{{ member.id }}">{{ member.user.email }} ({{ member.get_role_display }})</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">Add Staff</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,3 +1,6 @@
+import hashlib
+import secrets
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -15,7 +18,20 @@ from .tasks import (
 @login_required
 @require_http_methods(['GET'])
 def dashboard_home(request):
-    return render(request, 'dashboard/home.html')
+    businesses = request.user.owned_businesses.all()
+    memberships = request.user.business_memberships.filter(is_active=True).select_related('business')
+    total_bookings = 0
+    for b in businesses:
+        total_bookings += b.bookings.count()
+    for m in memberships:
+        total_bookings += m.business.bookings.count()
+    unread_notifications = request.user.notifications.filter(is_read=False).count()
+    return render(request, 'dashboard/home.html', {
+        'businesses': businesses,
+        'total_businesses': businesses.count(),
+        'total_bookings': total_bookings,
+        'unread_notifications': unread_notifications,
+    })
 
 @login_required
 @require_http_methods(['GET', 'POST'])
@@ -44,7 +60,13 @@ def settings(request):
         messages.success(request, 'Settings updated successfully.')
         return redirect('dashboard:settings')
 
+    new_api_key = request.session.pop('new_api_key', None)
     context = {
+        'api': {
+            'has_key': bool(user_settings.api_key_hash),
+            'key_prefix': user_settings.api_key_prefix,
+            'new_key': new_api_key,
+        },
         'notification_settings': {
             'comments': user_settings.notify_comments,
             'updates': user_settings.notify_updates,
@@ -144,4 +166,17 @@ def start_trial(request):
     send_trial_started_email.delay(user_email=request.user.email)
 
     messages.success(request, 'Trial period started successfully.')
+    return redirect('dashboard:settings')
+
+
+@login_required
+@require_http_methods(['POST'])
+def generate_api_key(request):
+    user_settings = UserSettings.objects.get_or_create(user=request.user)[0]
+    plaintext = f'sk-{secrets.token_hex(32)}'
+    user_settings.api_key_hash = hashlib.sha256(plaintext.encode()).hexdigest()
+    user_settings.api_key_prefix = plaintext[:8]
+    user_settings.save()
+    request.session['new_api_key'] = plaintext
+    messages.success(request, 'API key generated. Copy it now — it will not be shown again.')
     return redirect('dashboard:settings')

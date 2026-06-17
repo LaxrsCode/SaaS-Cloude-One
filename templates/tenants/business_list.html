@@ -1,0 +1,58 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}My Businesses | SaaS{% endblock %}
+{% block page_title %}My Businesses{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <p class="text-sm text-gray">Manage your businesses and locations</p>
+        <a href="{% url 'tenants:business_create' %}" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90 transition-opacity">
+            <i class="fa-solid fa-plus mr-1"></i> New Business
+        </a>
+    </div>
+
+    {% if owned_businesses %}
+        <div class="space-y-3">
+            <h2 class="text-sm font-medium text-gray uppercase tracking-wider">Owned Businesses</h2>
+            {% for business in owned_businesses %}
+                <a href="{% url 'tenants:business_detail' slug=business.slug %}" class="block border border-light-gray bg-white p-4 rounded hover:border-gray transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-medium">{{ business.name }}</h3>
+                            <p class="text-xs text-gray mt-0.5">{{ business.get_category_display }} &middot; {{ business.subscription_tier|title }}</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray text-xs"></i>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if memberships %}
+        <div class="space-y-3">
+            <h2 class="text-sm font-medium text-gray uppercase tracking-wider">Member Of</h2>
+            {% for membership in memberships %}
+                <a href="{% url 'tenants:business_detail' slug=membership.business.slug %}" class="block border border-light-gray bg-white p-4 rounded hover:border-gray transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-medium">{{ membership.business.name }}</h3>
+                            <p class="text-xs text-gray mt-0.5">{{ membership.get_role_display }}</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray text-xs"></i>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not owned_businesses and not memberships %}
+        <div class="text-center py-12 border border-light-gray bg-white rounded">
+            <i class="fa-solid fa-building text-3xl text-gray mb-3"></i>
+            <p class="text-sm text-gray">No businesses yet. Create your first one!</p>
+            <a href="{% url 'tenants:business_create' %}" class="inline-block mt-4 bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">
+                Create Business
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

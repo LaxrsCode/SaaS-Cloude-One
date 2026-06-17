@@ -1,0 +1,33 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}New Service | {{ business.name }}{% endblock %}
+{% block page_title %}New Service{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-2xl mx-auto">
+    <form method="POST" class="border border-light-gray bg-white p-6 rounded space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="name" class="block text-sm font-medium text-black mb-1">Service Name</label>
+            <input type="text" name="name" id="name" required placeholder="Haircut" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+        </div>
+        <div>
+            <label for="description" class="block text-sm font-medium text-black mb-1">Description</label>
+            <textarea name="description" id="description" rows="2" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="duration" class="block text-sm font-medium text-black mb-1">Duration (minutes)</label>
+                <input type="number" name="duration" id="duration" required value="30" min="5" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            </div>
+            <div>
+                <label for="price" class="block text-sm font-medium text-black mb-1">Price ($)</label>
+                <input type="number" name="price" id="price" required step="0.01" value="0.00" class="w-full border border-light-gray rounded px-3 py-2 text-sm focus:outline-none focus:border-gray">
+            </div>
+        </div>
+        <div class="flex items-center gap-3 pt-2">
+            <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90">Create Service</button>
+            <a href="{% url 'bookings:service_list' business_slug=business.slug %}" class="text-sm text-gray hover:text-black">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
