@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from apps.tenants.models import Business, BusinessSettings
-from apps.tenants.forms import RegisterBusinessForm, BusinessSettingsForm
+from apps.tenants.models import Business, BusinessSettings, BusinessMember, Service
+from apps.tenants.forms import RegisterBusinessForm, BusinessSettingsForm, ServiceForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -105,3 +105,71 @@ def tenant_member_invite(request, slug):
         messages.error(request, f'No existe un usuario con el email {email}.')
 
     return redirect('tenants:tenant_members', slug=business.slug)
+
+
+# ---- Views Gestion Servicios ----
+
+@login_required
+@require_http_methods(['GET'])
+def service_list(request, slug):
+    business = get_object_or_404(Business, slug=slug, owner=request.user, is_active=True)
+    services = business.services.all()
+    return render(request, 'tenants/service_list.html', {
+        'business': business,
+        'services': services,
+    })
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def service_create(request, slug):
+    business = get_object_or_404(Business, slug=slug, owner=request.user, is_active=True)
+
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, business=business)
+        if form.is_valid():
+            service = form.save()
+            messages.success(request, f'Servicio "{service.name}" creado.')
+            return redirect('tenants:service_list', slug=business.slug)
+    else:
+        form = ServiceForm(business=business)
+
+    return render(request, 'tenants/service_form.html', {
+        'form': form,
+        'business': business,
+        'is_edit': False,
+    })
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def service_edit(request, slug, service_id):
+    business = get_object_or_404(Business, slug=slug, owner=request.user, is_active=True)
+    service = get_object_or_404(Service, pk=service_id, business=business)
+
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, instance=service, business=business)
+        if form.is_valid():
+            service = form.save()
+            messages.success(request, f'Servicio "{service.name}" actualizado.')
+            return redirect('tenants:service_list', slug=business.slug)
+    else:
+        form = ServiceForm(instance=service, business=business)
+
+    return render(request, 'tenants/service_form.html', {
+        'form': form,
+        'business': business,
+        'service': service,
+        'is_edit': True,
+    })
+
+
+@login_required
+@require_http_methods(['POST'])
+def service_delete(request, slug, service_id):
+    business = get_object_or_404(Business, slug=slug, owner=request.user, is_active=True)
+    service = get_object_or_404(Service, pk=service_id, business=business)
+    service.is_active = False
+    service.save(update_fields=['is_active'])
+    messages.success(request, f'Servicio "{service.name}" desactivado.')
+    return redirect('tenants:service_list', slug=business.slug)

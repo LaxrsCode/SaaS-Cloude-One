@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.text import slugify
-from .models import Business, BusinessSettings
+from .models import Business, BusinessSettings, BusinessMember, Service
 
 class RegisterBusinessForm(forms.ModelForm):
     class Meta:
@@ -45,3 +45,30 @@ class BusinessSettingsForm(forms.ModelForm):
             'secondary_color': forms.TextInput(attrs={'type': 'color'}),
             'working_hours': forms.Textarea(attrs={'rows': 6}),
         }
+
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'description', 'duration', 'price', 'staff', 'is_active']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'staff': forms.CheckboxSelectMultiple(),
+        }
+
+    def __init__(self, *args, business=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.business = business
+        if business:
+            self.fields['staff'].queryset = BusinessMember.objects.filter(
+                business=business, is_active=True,
+            )
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.business and not instance.pk:
+            instance.business = self.business
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
