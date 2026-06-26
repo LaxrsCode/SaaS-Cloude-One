@@ -14,5 +14,5 @@ urlpatterns = [
     path('<slug:slug>/services/', views.service_list, name='service_list'),
     path('<slug:slug>/services/create/', views.service_create, name='service_create'),
     path('<slug:slug>/services/<int:service_id>/edit/', views.service_edit, name='service_edit'),
-    path('<slug:slug>/services/<int:service_id>/delete/', views.service_delete, name='service_delete'),
+    path('<slug:slug>/services/<int:service_id>/delete/', views.service_disable, name='service_delete'),
 ]

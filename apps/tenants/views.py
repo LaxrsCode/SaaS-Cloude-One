@@ -166,7 +166,7 @@ def service_edit(request, slug, service_id):
 
 @login_required
 @require_http_methods(['POST'])
-def service_delete(request, slug, service_id):
+def service_disable(request, slug, service_id):
     business = get_object_or_404(Business, slug=slug, owner=request.user, is_active=True)
     service = get_object_or_404(Service, pk=service_id, business=business)
     service.is_active = False
