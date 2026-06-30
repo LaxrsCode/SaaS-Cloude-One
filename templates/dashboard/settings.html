@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 <a href="{% url 'dashboard:subscription_plans' %}" class="text-sm px-4 py-1.5 bg-black text-white rounded hover:bg-dark-gray transition-colors">
-                    {% if subscription.is_active %}Manage{% else %}Upgrade{% endif %}
+                    {% if subscription.is_active or subscription.is_trialing %}Manage{% else %}Upgrade{% endif %}
                 </a>
             </div>
             <div class="px-6 py-4 flex items-center justify-between">
@@ -99,10 +99,14 @@
                     </div>
                     <div>
                         <p class="text-sm text-black">Payment method</p>
-                        <p class="text-xs text-gray mt-0.5">No payment method on file.</p>
+                        <p class="text-xs text-gray mt-0.5">
+                            {% if has_stripe_customer %}Manage in the Stripe billing portal.{% else %}No payment method on file.{% endif %}
+                        </p>
                     </div>
                 </div>
-                <button type="button" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Add card</button>
+                {% if has_stripe_customer %}
+                <a href="{% url 'subscriptions:customer_portal' %}" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Manage</a>
+                {% endif %}
             </div>
             <div class="px-6 py-4 flex items-center gap-4">
                 <div class="w-9 h-9 bg-[#fafafa] rounded flex items-center justify-center">

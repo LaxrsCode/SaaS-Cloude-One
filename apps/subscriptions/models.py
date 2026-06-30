@@ -60,6 +60,20 @@ class Subscription(models.Model):
     def is_active(self):
         return self.status in {'active', 'trialing', 'past_due'}
 
-    @property 
+    @property
     def is_trialing(self):
         return self.status == 'trialing'
+
+
+class WebhookEvent(models.Model):
+    """Registro de eventos de Stripe ya procesados (idempotencia)."""
+    stripe_event_id = models.CharField(max_length=255, unique=True)
+    processed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-processed_at']
+        verbose_name = 'Webhook Event'
+        verbose_name_plural = 'Webhook Events'
+
+    def __str__(self):
+        return self.stripe_event_id

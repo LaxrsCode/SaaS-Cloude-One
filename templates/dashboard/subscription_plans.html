@@ -19,40 +19,40 @@
                     <i class="fa-solid fa-gem text-white"></i>
                 </div>
                 <div>
-                    <p class="text-lg font-medium text-black">{{ current_plan.name|default:"Free" }} Plan</p>
+                    <p class="text-lg font-medium text-black">{{ subscription.plan_name|default:"Free" }} Plan</p>
                     <p class="text-sm text-gray mt-0.5">
-                        {% if is_subscription_active %}
-                            Active &middot; Renews {{ subscription_end_date|date:"M d, Y"|default:"—" }}
-                        {% elif is_trial_active %}
-                            Trial &middot; Ends {{ trial_end_date|date:"M d, Y" }}
+                        {% if subscription.is_active %}
+                            Active &middot; Renews {{ subscription.end_date|date:"M d, Y"|default:"—" }}
+                        {% elif subscription.is_trialing %}
+                            Trial &middot; Ends {{ subscription.trial_end_date|date:"M d, Y" }}
                         {% else %}
-                            {{ subscription_status|default:"No active subscription"|title }}
+                            {{ subscription.status|default:"No active subscription"|title }}
                         {% endif %}
                     </p>
                 </div>
             </div>
-            {% if is_subscription_active %}
+            {% if subscription.is_active or subscription.is_trialing %}
             <form method="POST" action="{% url 'dashboard:cancel_subscription' %}">
                 {% csrf_token %}
-                <button type="submit" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Cancel plan</button>
+                <button type="submit" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Manage billing</button>
             </form>
-            {% elif not is_trial_active %}
+            {% elif not subscription.has_subscription %}
             <form method="POST" action="{% url 'dashboard:start_trial' %}">
                 {% csrf_token %}
-                <button type="submit" class="text-sm px-4 py-2 bg-black text-white rounded hover:bg-dark-gray transition-colors">Start 14-day trial</button>
+                <button type="submit" class="text-sm px-4 py-2 bg-black text-white rounded hover:bg-dark-gray transition-colors">Start trial</button>
             </form>
             {% endif %}
         </div>
     </div>
 
-    {% if is_trial_active %}
+    {% if subscription.is_trialing %}
     <div class="mt-4 bg-white border border-light-gray rounded p-4 flex items-start gap-3">
         <div class="w-8 h-8 bg-[#fafafa] rounded flex items-center justify-center flex-shrink-0">
             <i class="fa-solid fa-clock text-gray text-xs"></i>
         </div>
         <div>
             <p class="text-sm text-black">Trial period active</p>
-            <p class="text-xs text-gray mt-0.5">Your trial ends on {{ trial_end_date|date:"F j, Y" }}. Choose a plan below to continue after your trial.</p>
+            <p class="text-xs text-gray mt-0.5">Your trial ends on {{ subscription.trial_end_date|date:"F j, Y" }}. Choose a plan below to continue after your trial.</p>
         </div>
     </div>
     {% endif %}
@@ -103,11 +103,13 @@
                 <div class="p-5 border-t border-light-gray bg-[#fafafa] rounded-b">
                     {% if current_plan == plan %}
                         <div class="w-full text-sm py-2.5 text-center text-gray">Current plan</div>
+                    {% elif plan.price == 0 %}
+                        <div class="w-full text-sm py-2.5 text-center text-gray">Free tier</div>
                     {% else %}
                         <form method="POST" action="{% url 'dashboard:subscribe_to_plan' plan.slug %}">
                             {% csrf_token %}
                             <button type="submit" class="w-full text-sm py-2.5 bg-black text-white rounded hover:bg-dark-gray transition-colors">
-                                {% if plan.price == 0 %}Downgrade to Free{% else %}Upgrade to {{ plan.name }}{% endif %}
+                                Upgrade to {{ plan.name }}
                             </button>
                         </form>
                     {% endif %}
@@ -130,10 +132,14 @@
                     </div>
                     <div>
                         <p class="text-sm text-black">Payment method</p>
-                        <p class="text-xs text-gray mt-0.5">No payment method on file.</p>
+                        <p class="text-xs text-gray mt-0.5">
+                            {% if has_stripe_customer %}Manage cards and payment methods in the billing portal.{% else %}No payment method on file.{% endif %}
+                        </p>
                     </div>
                 </div>
-                <button type="button" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Add card</button>
+                {% if has_stripe_customer %}
+                <a href="{% url 'subscriptions:customer_portal' %}" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Manage</a>
+                {% endif %}
             </div>
             <div class="p-5 flex items-center justify-between">
                 <div class="flex items-center gap-4">
@@ -142,9 +148,12 @@
                     </div>
                     <div>
                         <p class="text-sm text-black">Invoices</p>
-                        <p class="text-xs text-gray mt-0.5">No invoices yet.</p>
+                        <p class="text-xs text-gray mt-0.5">View and download invoices in the billing portal.</p>
                     </div>
                 </div>
+                {% if has_stripe_customer %}
+                <a href="{% url 'subscriptions:customer_portal' %}" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">View</a>
+                {% endif %}
             </div>
         </div>
     </div>
