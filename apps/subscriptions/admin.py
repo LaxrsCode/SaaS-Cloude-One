@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import StripeCustomer, Subscription
+from .models import StripeCustomer, Subscription, WebhookEvent
 
 
 class SubscriptionInline(admin.TabularInline):
@@ -45,3 +45,13 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at')
     search_fields = ('user__email', 'stripe_subscription_id')
     readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(WebhookEvent)
+class WebhookEventAdmin(admin.ModelAdmin):
+    list_display = ('stripe_event_id', 'processed_at')
+    search_fields = ('stripe_event_id',)
+    readonly_fields = ('stripe_event_id', 'processed_at')
+
+    def has_add_permission(self, request):
+        return False
