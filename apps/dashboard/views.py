@@ -21,10 +21,10 @@ def dashboard_home(request):
     businesses = request.user.owned_businesses.all()
     memberships = request.user.business_memberships.filter(is_active=True).select_related('business')
     total_bookings = 0
-    for b in businesses:
-        total_bookings += b.bookings.count()
-    for m in memberships:
-        total_bookings += m.business.bookings.count()
+    for business in businesses:
+        total_bookings += business.bookings.count()
+    for membership in memberships:
+        total_bookings += membership.business.bookings.count()
     unread_notifications = request.user.notifications.filter(is_read=False).count()
     return render(request, 'dashboard/home.html', {
         'businesses': businesses,

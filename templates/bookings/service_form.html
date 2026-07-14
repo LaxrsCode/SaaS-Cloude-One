@@ -2,6 +2,20 @@
 {% block title %}New Service | {{ business.name }}{% endblock %}
 {% block page_title %}New Service{% endblock %}
 
+{% block breadcrumb %}
+<ol class="flex items-center gap-1.5">
+    <li><a href="{% url 'dashboard:home' %}" class="hover:text-black transition-colors">Dashboard</a></li>
+    <li class="text-gray/40">/</li>
+    <li><a href="{% url 'tenants:tenant_list' %}" class="hover:text-black transition-colors">My Businesses</a></li>
+    <li class="text-gray/40">/</li>
+    <li><a href="{% url 'tenants:business_detail' slug=business.slug %}" class="hover:text-black transition-colors">{{ business.name }}</a></li>
+    <li class="text-gray/40">/</li>
+    <li><a href="{% url 'bookings:service_list' business_slug=business.slug %}" class="hover:text-black transition-colors">Services</a></li>
+    <li class="text-gray/40">/</li>
+    <li class="text-black font-medium" aria-current="page">New Service</li>
+</ol>
+{% endblock %}
+
 {% block dashboard_content %}
 <div class="max-w-2xl mx-auto">
     <form method="POST" class="border border-light-gray bg-white p-6 rounded space-y-4">

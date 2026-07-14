@@ -2,6 +2,14 @@
 {% block title %}Notifications | SaaS{% endblock %}
 {% block page_title %}Notifications{% endblock %}
 
+{% block breadcrumb %}
+<ol class="flex items-center gap-1.5">
+    <li><a href="{% url 'dashboard:home' %}" class="hover:text-black transition-colors">Dashboard</a></li>
+    <li class="text-gray/40">/</li>
+    <li class="text-black font-medium" aria-current="page">Notifications</li>
+</ol>
+{% endblock %}
+
 {% block dashboard_content %}
 <div class="max-w-3xl mx-auto space-y-6">
     <div class="flex items-center justify-between">

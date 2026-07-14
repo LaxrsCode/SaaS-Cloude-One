@@ -2,6 +2,18 @@
 {% block title %}Clients | {{ business.name }}{% endblock %}
 {% block page_title %}Clients - {{ business.name }}{% endblock %}
 
+{% block breadcrumb %}
+<ol class="flex items-center gap-1.5">
+    <li><a href="{% url 'dashboard:home' %}" class="hover:text-black transition-colors">Dashboard</a></li>
+    <li class="text-gray/40">/</li>
+    <li><a href="{% url 'tenants:tenant_list' %}" class="hover:text-black transition-colors">My Businesses</a></li>
+    <li class="text-gray/40">/</li>
+    <li><a href="{% url 'tenants:business_detail' slug=business.slug %}" class="hover:text-black transition-colors">{{ business.name }}</a></li>
+    <li class="text-gray/40">/</li>
+    <li class="text-black font-medium" aria-current="page">Clients</li>
+</ol>
+{% endblock %}
+
 {% block dashboard_content %}
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center justify-between">

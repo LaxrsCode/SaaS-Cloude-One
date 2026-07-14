@@ -64,7 +64,8 @@ INSTALLED_APPS = [
     'apps.subscriptions',
     'apps.tenants',
     'apps.bookings',
-    'apps.clients'
+    'apps.clients',
+    'apps.notifications',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'

@@ -1,161 +1,96 @@
 {% extends "base.html" %}
 
-{% block title %}Features | Django SaaS Boilerplate{% endblock %}
+{% block title %}Features | CloudCO One{% endblock %}
 
 {% block content %}
-<!-- Hero -->
-<div class="py-24 lg:py-32 border-b border-light-gray">
+<div class="py-24 lg:py-32 border-b border-light-gray bg-white">
     <div class="max-w-4xl mx-auto text-center px-4">
-        <p class="text-xs font-medium uppercase tracking-widest text-gray">Features</p>
+        <p class="text-xs font-medium uppercase tracking-widest text-gray">Qué incluye</p>
         <h1 class="mt-4 text-4xl lg:text-5xl font-medium tracking-tight text-black leading-tight">
-            Everything you need.<br>Nothing you don't.
+            Todo lo necesario para vender servicios, recibir reservas y verse profesional.
         </h1>
         <p class="mt-6 text-lg text-gray max-w-2xl mx-auto leading-relaxed">
-            No half-built features, no "coming soon" placeholders. Every feature listed here works out of the box.
+            CloudCO One está pensado para que el usuario entienda rápido qué hace el sistema, cómo le ayuda a su negocio y por qué le conviene probarlo.
         </p>
-    </div>
-</div>
-
-<!-- Features -->
-<div class="py-24">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <!-- Row 1 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-24">
-
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-shield-halved text-white text-xs"></i>
-                    </div>
-                    <h3 class="text-base font-medium text-black uppercase tracking-wider">Authentication</h3>
-                </div>
-                <p class="mt-4 text-sm text-gray leading-relaxed">
-                    Custom user model with email-only login. No usernames. Powered by django-allauth with all flows built and styled.
-                </p>
-                <ul class="mt-6 space-y-2.5">
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Custom user model (email as username)</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Signup with email verification</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Password reset and change</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Login code (passwordless)</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>20+ styled auth templates</li>
-                </ul>
-            </div>
-
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-credit-card text-white text-xs"></i>
-                    </div>
-                    <h3 class="text-base font-medium text-black uppercase tracking-wider">Stripe Payments</h3>
-                </div>
-                <p class="mt-4 text-sm text-gray leading-relaxed">
-                    Subscription billing with Stripe's Payment Methods API. Customer creation, webhooks, and status tracking handled.
-                </p>
-                <ul class="mt-6 space-y-2.5">
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Payment Methods API integration</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Webhook event handling</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Subscription plans (admin-managed)</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>14-day free trial support</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Status tracking (active, cancelled, trial)</li>
-                </ul>
-            </div>
-
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-gauge-high text-white text-xs"></i>
-                    </div>
-                    <h3 class="text-base font-medium text-black uppercase tracking-wider">User Dashboard</h3>
-                </div>
-                <p class="mt-4 text-sm text-gray leading-relaxed">
-                    Sidebar layout with profile, settings, and subscription management. Responsive for mobile and desktop.
-                </p>
-                <ul class="mt-6 space-y-2.5">
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Profile editing (name, email)</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Notification preferences</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>API key generation</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Subscription status and plan switching</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Mobile-responsive sidebar</li>
-                </ul>
-            </div>
-
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-bolt text-white text-xs"></i>
-                    </div>
-                    <h3 class="text-base font-medium text-black uppercase tracking-wider">Django 6.0 Native</h3>
-                </div>
-                <p class="mt-4 text-sm text-gray leading-relaxed">
-                    Uses the latest Django features. No legacy patterns, no deprecated APIs.
-                </p>
-                <ul class="mt-6 space-y-2.5">
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Background tasks via @task decorator</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Content Security Policy middleware</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Template partials for reusable UI</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>CSP nonces on all scripts and styles</li>
-                </ul>
-            </div>
-
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-palette text-white text-xs"></i>
-                    </div>
-                    <h3 class="text-base font-medium text-black uppercase tracking-wider">Frontend Stack</h3>
-                </div>
-                <p class="mt-4 text-sm text-gray leading-relaxed">
-                    No build step required. Tailwind via CDN, Alpine.js for interactivity, HTMX for dynamic pages.
-                </p>
-                <ul class="mt-6 space-y-2.5">
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Tailwind CSS (CDN, zero build)</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Alpine.js for UI behavior</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>HTMX for partial page updates</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Space Grotesk typography</li>
-                </ul>
-            </div>
-
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-rocket text-white text-xs"></i>
-                    </div>
-                    <h3 class="text-base font-medium text-black uppercase tracking-wider">Production Ready</h3>
-                </div>
-                <p class="mt-4 text-sm text-gray leading-relaxed">
-                    Security headers, database flexibility, static files, and deploy configs included.
-                </p>
-                <ul class="mt-6 space-y-2.5">
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>HSTS, SSL redirect, secure cookies</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>PostgreSQL via DATABASE_URL</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>WhiteNoise for static files</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Gunicorn + Procfile</li>
-                    <li class="flex items-center text-sm text-gray"><i class="fa-solid fa-check text-black mr-3 text-[10px]"></i>Ruff linting and formatting</li>
-                </ul>
-            </div>
-
+        <div class="mt-10 inline-flex items-center gap-2 rounded-none border border-light-gray px-4 py-2 text-sm text-black bg-white">
+            <i class="fa-solid fa-circle-check text-black"></i>
+            <span>Un solo plan de pago con 14 días de prueba gratis</span>
         </div>
     </div>
 </div>
 
-<!-- CTA -->
+<div class="py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+            <div class="border border-light-gray p-8 bg-white">
+                <div class="w-10 h-10 bg-black flex items-center justify-center">
+                    <i class="fa-solid fa-calendar-check text-white text-xs"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-medium text-black">Reservas claras y fáciles</h3>
+                <p class="mt-3 text-gray leading-relaxed">El cliente ve disponibilidad, elige un horario y reserva sin complicaciones. El negocio evita errores y mantiene la agenda ordenada.</p>
+            </div>
+            <div class="border border-light-gray p-8 bg-white">
+                <div class="w-10 h-10 bg-black flex items-center justify-center">
+                    <i class="fa-solid fa-globe text-white text-xs"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-medium text-black">Landing pública para cada negocio</h3>
+                <p class="mt-3 text-gray leading-relaxed">Cada negocio tiene una página pública simple y atractiva para mostrar servicios, horarios y un botón directo de reserva.</p>
+            </div>
+            <div class="border border-light-gray p-8 bg-white">
+                <div class="w-10 h-10 bg-black flex items-center justify-center">
+                    <i class="fa-solid fa-users text-white text-xs"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-medium text-black">Clientes y servicios en un solo lugar</h3>
+                <p class="mt-3 text-gray leading-relaxed">Todo queda centralizado: historial de clientes, servicios ofrecidos, notas importantes y control general del negocio.</p>
+            </div>
+            <div class="border border-light-gray p-8 bg-white">
+                <div class="w-10 h-10 bg-black flex items-center justify-center">
+                    <i class="fa-solid fa-bell text-white text-xs"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-medium text-black">Recordatorios automáticos</h3>
+                <p class="mt-3 text-gray leading-relaxed">Los avisos ayudan a reducir ausencias y hacen que el cliente reciba una experiencia más profesional y ordenada.</p>
+            </div>
+            <div class="border border-light-gray p-8 bg-white">
+                <div class="w-10 h-10 bg-black flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-white text-xs"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-medium text-black">Datos separados por negocio</h3>
+                <p class="mt-3 text-gray leading-relaxed">Cada tenant mantiene su información aislada, algo clave para crecer con seguridad y sin mezclar clientes ni reservas.</p>
+            </div>
+            <div class="border border-light-gray p-8 bg-white">
+                <div class="w-10 h-10 bg-black flex items-center justify-center">
+                    <i class="fa-solid fa-credit-card text-white text-xs"></i>
+                </div>
+                <h3 class="mt-5 text-xl font-medium text-black">Un solo plan de pago</h3>
+                <p class="mt-3 text-gray leading-relaxed">No hay confusión con múltiples niveles. El usuario prueba la plataforma 14 días y luego pasa al plan pago único.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="py-24 border-t border-light-gray bg-white">
+    <div class="max-w-4xl mx-auto text-center px-4">
+        <p class="text-xs font-medium uppercase tracking-widest text-gray">Por qué funciona</p>
+        <h2 class="mt-4 text-3xl lg:text-4xl font-medium tracking-tight text-black">
+            Se entiende rápido, se usa fácil y se ve bien desde el primer acceso.
+        </h2>
+        <p class="mt-6 text-lg text-gray leading-relaxed">
+            La propuesta está pensada para negocios que no quieren perder tiempo aprendiendo herramientas complejas. Entra, entiende, configura y empieza a recibir reservas.
+        </p>
+    </div>
+</div>
+
 <div class="bg-black py-24">
     <div class="max-w-3xl mx-auto text-center px-4">
         <h2 class="text-3xl lg:text-4xl font-medium tracking-tight text-white">
-            Ready to build?
+            Una sola plataforma para todo el flujo del negocio.
         </h2>
-        <p class="mt-4 text-gray text-lg">
-            Clone the repo. Run <code class="text-light-gray">make install</code>. Start shipping.
+        <p class="mt-4 text-gray text-lg leading-relaxed">
+            CloudCO One reúne presencia digital, reservas, clientes y recordatorios en una experiencia simple para el negocio y clara para el cliente.
         </p>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'account_signup' %}" class="px-10 py-4 bg-white text-black hover:bg-light-gray text-sm font-medium uppercase tracking-wider transition-colors">
-                Get started free
-            </a>
-            <a href="{% url 'landing:pricing' %}" class="px-10 py-4 border border-white text-white hover:bg-dark-gray text-sm font-medium uppercase tracking-wider transition-colors">
-                See pricing
-            </a>
-        </div>
+        <a href="{% url 'account_signup' %}" class="mt-10 inline-flex px-10 py-4 bg-white text-black hover:bg-light-gray text-sm font-medium uppercase tracking-wider transition-colors">
+            Empezar prueba de 14 días
+        </a>
     </div>
 </div>
 {% endblock %}

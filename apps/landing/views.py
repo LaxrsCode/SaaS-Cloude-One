@@ -18,34 +18,34 @@ def robots_txt(request):
 def home(request):
     features = [
         {
+            'icon': 'building',
+            'title': 'Multi-tenant real',
+            'description': 'Cada negocio trabaja con sus propios datos, usuarios y configuración dentro de un mismo sistema centralizado.',
+        },
+        {
+            'icon': 'calendar-check',
+            'title': 'Reservas en tiempo real',
+            'description': 'El sistema controla horarios, disponibilidad y solicitudes para evitar citas duplicadas o huecos manuales.',
+        },
+        {
+            'icon': 'globe',
+            'title': 'Landing pública automática',
+            'description': 'Cada negocio puede tener una página pública para mostrar servicios, horarios, ubicación y botón de reserva.',
+        },
+        {
+            'icon': 'users',
+            'title': 'Clientes y servicios centralizados',
+            'description': 'Toda la información comercial queda ordenada en un solo panel para consultar historial, notas y catálogo.',
+        },
+        {
+            'icon': 'bell',
+            'title': 'Recordatorios automáticos',
+            'description': 'Las notificaciones ayudan a reducir ausencias y mantener una comunicación más clara con cada cliente.',
+        },
+        {
             'icon': 'shield-halved',
-            'title': 'Authentication',
-            'description': 'Email-based signup, login, verification, and password reset. Powered by django-allauth.',
-        },
-        {
-            'icon': 'credit-card',
-            'title': 'Stripe Payments',
-            'description': 'Subscriptions, webhooks, and payment intents. Ready to accept payments on day one.',
-        },
-        {
-            'icon': 'gauge-high',
-            'title': 'Dashboard',
-            'description': 'User profile, settings, notification preferences, and API key management built in.',
-        },
-        {
-            'icon': 'bolt',
-            'title': 'Background Tasks',
-            'description': 'Django 6.0 native async tasks. No Celery, no Redis, no extra infrastructure.',
-        },
-        {
-            'icon': 'lock',
-            'title': 'Security',
-            'description': 'CSP headers, HSTS, secure cookies, and SSL redirect. Production-grade from the start.',
-        },
-        {
-            'icon': 'rocket',
-            'title': 'Deploy Ready',
-            'description': 'PostgreSQL, WhiteNoise, Gunicorn, and Procfile. Push to production in minutes.',
+            'title': 'Seguridad y suscripciones',
+            'description': 'Autenticación, planes de pago y aislamiento de datos para escalar con confianza sin mezclar información.',
         },
     ]
 

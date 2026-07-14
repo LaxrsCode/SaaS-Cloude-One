@@ -3,6 +3,14 @@
 {% block title %}Plans | SaaS Boilerplate{% endblock %}
 {% block page_title %}Plans{% endblock %}
 
+{% block breadcrumb %}
+<ol class="flex items-center gap-1.5">
+    <li><a href="{% url 'dashboard:home' %}" class="hover:text-black transition-colors">Dashboard</a></li>
+    <li class="text-gray/40">/</li>
+    <li class="text-black font-medium" aria-current="page">Plans</li>
+</ol>
+{% endblock %}
+
 {% block dashboard_content %}
 <div>
     <h2 class="text-xl font-medium text-black">Plans & Billing</h2>

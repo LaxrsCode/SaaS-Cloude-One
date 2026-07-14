@@ -2,6 +2,16 @@
 {% block title %}Create Business | SaaS{% endblock %}
 {% block page_title %}Create Business{% endblock %}
 
+{% block breadcrumb %}
+<ol class="flex items-center gap-1.5">
+    <li><a href="{% url 'dashboard:home' %}" class="hover:text-black transition-colors">Dashboard</a></li>
+    <li class="text-gray/40">/</li>
+    <li><a href="{% url 'tenants:tenant_list' %}" class="hover:text-black transition-colors">My Businesses</a></li>
+    <li class="text-gray/40">/</li>
+    <li class="text-black font-medium" aria-current="page">New Business</li>
+</ol>
+{% endblock %}
+
 {% block dashboard_content %}
 <div class="max-w-2xl mx-auto">
     <form method="POST" class="border border-light-gray bg-white p-6 rounded space-y-4">
@@ -20,7 +30,7 @@
         </div>
         <div class="flex items-center gap-3 pt-2">
             <button type="submit" class="bg-black text-white text-sm px-4 py-2 rounded hover:opacity-90 transition-opacity">Create Business</button>
-            <a href="{% url 'tenants:business_list' %}" class="text-sm text-gray hover:text-black">Cancel</a>
+            <a href="{% url 'tenants:tenant_list' %}" class="text-sm text-gray hover:text-black">Cancel</a>
         </div>
     </form>
 </div>

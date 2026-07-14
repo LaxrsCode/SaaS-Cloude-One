@@ -2,6 +2,12 @@
 {% block title %}Overview | SaaS Boilerplate{% endblock %}
 {% block page_title %}Overview{% endblock %}
 
+{% block breadcrumb %}
+<ol class="flex items-center gap-1.5">
+    <li class="text-black font-medium" aria-current="page">Dashboard</li>
+</ol>
+{% endblock %}
+
 {% block dashboard_content %}
 <div class="mb-8">
     <h2 class="text-xl font-medium text-black">Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %}</h2>
@@ -9,7 +15,7 @@
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <a href="{% url 'tenants:business_list' %}" class="bg-white border border-light-gray rounded p-5 hover:border-gray transition-colors">
+    <a href="{% url 'tenants:tenant_list' %}" class="bg-white border border-light-gray rounded p-5 hover:border-gray transition-colors">
         <div class="flex items-center justify-between">
             <p class="text-xs text-gray uppercase tracking-wider">Businesses</p>
             <div class="w-8 h-8 bg-[#fafafa] rounded flex items-center justify-center">
@@ -19,7 +25,7 @@
         <p class="mt-3 text-3xl font-medium text-black">{{ total_businesses }}</p>
         <p class="mt-1 text-xs text-gray">Manage your locations</p>
     </a>
-    <a href="{% url 'tenants:business_list' %}" class="bg-white border border-light-gray rounded p-5 hover:border-gray transition-colors">
+    <a href="{% url 'tenants:tenant_list' %}" class="bg-white border border-light-gray rounded p-5 hover:border-gray transition-colors">
         <div class="flex items-center justify-between">
             <p class="text-xs text-gray uppercase tracking-wider">Bookings</p>
             <div class="w-8 h-8 bg-[#fafafa] rounded flex items-center justify-center">
@@ -55,7 +61,7 @@
     <div class="mt-8">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-medium text-black">Your Businesses</h3>
-            <a href="{% url 'tenants:business_create' %}" class="text-xs text-gray hover:text-black">New Business &rarr;</a>
+            <a href="{% url 'tenants:tenant_register' %}" class="text-xs text-gray hover:text-black">New Business &rarr;</a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for business in businesses %}
@@ -77,7 +83,7 @@
             <h3 class="text-sm font-medium text-black">Quick actions</h3>
         </div>
         <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a href="{% url 'tenants:business_create' %}" class="flex items-center gap-3 px-3 py-3 rounded hover:bg-[#fafafa] transition-colors group border border-light-gray">
+            <a href="{% url 'tenants:tenant_register' %}" class="flex items-center gap-3 px-3 py-3 rounded hover:bg-[#fafafa] transition-colors group border border-light-gray">
                 <i class="fa-solid fa-plus text-gray text-xs w-4 text-center"></i>
                 <span class="text-sm text-gray group-hover:text-black">Create a business</span>
             </a>

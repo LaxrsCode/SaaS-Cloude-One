@@ -29,6 +29,7 @@ urlpatterns = [
     path('dashboard/', include('apps.dashboard.urls')),
     path('subscriptions/', include('apps.subscriptions.urls')),
     path('tenants/', include('apps.tenants.urls')),
+    path('notifications/', include('apps.notifications.urls')),
 ]
 
 if settings.DEBUG:

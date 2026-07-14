@@ -46,7 +46,7 @@ Run in order: `lint -> test` (no typecheck step exists).
 - API keys in `UserSettings` are stored as `sha256` hashes; plaintext shown once via session.
 
 
-## vexp <!-- vexp v2.0.25 -->
+## vexp <!-- vexp v2.1.4 -->
 
 **MANDATORY: use `run_pipeline` - do NOT grep or glob the codebase.**
 vexp returns pre-indexed, graph-ranked context in a single call.
