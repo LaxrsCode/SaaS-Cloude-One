@@ -1,39 +1,38 @@
-from django.conf import settings
 from django.db import models
-
+from django.conf import settings
+# Create your models here.
 
 class Business(models.Model):
-    CATEGORY_CHOICES = [
-        ('barberia', 'Barbería'),
-        ('salon', 'Salón'),
-        ('spa', 'Spa'),
-        ('clinica', 'Clínica'),
-        ('gimnasio', 'Gimnasio'),
-        ('restaurante', 'Restaurante'),
-        ('consultorio', 'Consultorio'),
-        ('tatuador', 'Tatuador'),
-        ('entrenador', 'Entrenador'),
-        ('otro', 'Otro'),
-    ]
-
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    subdomain = models.CharField(max_length=100, unique=True, blank=True)
-    description = models.TextField(blank=True)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='otro')
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='owned_businesses',
+    name            = models.CharField(max_length=200, unique=True)
+    slug            = models.SlugField(unique=True, blank=True) 
+    subdomain       = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    description     = models.TextField(blank=True)
+    category        = models.CharField(
+        choices=[
+            ('barberia', 'Barberia'),
+            ('salon', 'Salon'),
+            ('spa', 'Spa'),
+            ('clinica', 'Clinica'),
+            ('gimnasio', 'Gimnasio'),
+            ('restaurante', 'Restaurante'),
+            ('consultorio', 'Consultorio'),
+            ('tatuador', 'Tatuador'),
+            ('entrenador', 'Entrenador'),
+            ('otro', 'Otro'),
+        ],
+        default='otro',
     )
+    owner           = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owned_businesses', on_delete=models.CASCADE)
     subscription_tier = models.CharField(
-        max_length=20,
-        choices=[('free', 'Free'), ('pro', 'Pro'), ('business', 'Business')],
-        default='free',
+        choices=[
+            ('trial', 'Trial'),
+            ('pro', 'Pro'),
+        ],
+        default='trial',
     )
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    is_active       = models.BooleanField(default=True)
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Business'
@@ -44,37 +43,24 @@ class Business(models.Model):
 
 
 class BusinessSettings(models.Model):
-    business = models.OneToOneField(
-        Business,
-        on_delete=models.CASCADE,
-        related_name='settings',
-    )
-    logo = models.ImageField(upload_to='businesses/logos/', blank=True)
-    cover_image = models.ImageField(upload_to='businesses/covers/', blank=True)
+    business = models.OneToOneField(Business, on_delete=models.CASCADE, related_name='settings')
+    logo = models.ImageField(upload_to='business_logos/', blank=True, null=True)
     primary_color = models.CharField(max_length=7, default='#000000')
     secondary_color = models.CharField(max_length=7, default='#666666')
-    font_family = models.CharField(max_length=100, blank=True)
-    tagline = models.CharField(max_length=200, blank=True)
-    phone = models.CharField(max_length=20, blank=True)
-    email = models.EmailField(blank=True)
-    address = models.CharField(max_length=300, blank=True)
-    website = models.URLField(blank=True)
-    social_facebook = models.URLField(blank=True)
-    social_instagram = models.URLField(blank=True)
-    social_tiktok = models.URLField(blank=True)
+    font_family = models.CharField(max_length=100, default='Space Grotesk')
+    phone_contact = models.CharField(max_length=15, blank=True, null=True)
+    email_contact = models.EmailField(blank=True, null=True)
+    address_contact = models.TextField(blank=True, null=True)
+    facebook_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
     working_hours = models.JSONField(default=dict)
-    timezone = models.CharField(max_length=50, default='America/Santo_Domingo')
-    currency = models.CharField(max_length=3, default='DOP')
+    google_maps_url = models.URLField(blank=True, null=True)
     google_calendar_enabled = models.BooleanField(default=False)
-    google_calendar_id = models.CharField(max_length=255, blank=True)
+    google_calendar_id = models.CharField( max_length=255, blank=True, null=True)
 
-    class Meta:
-        verbose_name = 'Business Settings'
-        verbose_name_plural = 'Business Settings'
 
-    def __str__(self):
-        return f'Settings for {self.business.name}'
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class BusinessMember(models.Model):
     ROLE_CHOICES = [
@@ -82,25 +68,42 @@ class BusinessMember(models.Model):
         ('admin', 'Admin'),
         ('staff', 'Staff'),
     ]
-
-    business = models.ForeignKey(
-        Business,
-        on_delete=models.CASCADE,
-        related_name='members',
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='business_memberships',
-    )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='staff')
-    is_active = models.BooleanField(default=True)
-    joined_at = models.DateTimeField(auto_now_add=True)
+    business    = models.ForeignKey(Business, related_name='members', on_delete=models.CASCADE)
+    user        = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='business_memberships', on_delete=models.CASCADE)
+    role        = models.CharField(choices=ROLE_CHOICES, default='staff')
+    is_active   = models.BooleanField(default=True)
+    joined_at   = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('business', 'user')
-        verbose_name = 'Business Member'
-        verbose_name_plural = 'Business Members'
 
     def __str__(self):
-        return f'{self.user.email} - {self.business.name} ({self.role})'
+        return f"{self.user.email} - {self.business.name}"
+
+DAYS_OF_WEEK = [
+    (0, 'Lunes'), (1, 'Martes'), (2, 'Miércoles'), (3, 'Jueves'),
+    (4, 'Viernes'), (5, 'Sábado'), (6, 'Domingo'),
+]
+
+class Service(models.Model):
+    business    = models.ForeignKey(Business, related_name='services', on_delete=models.CASCADE)
+    staff       = models.ManyToManyField(BusinessMember, related_name='services', blank=True)
+    name        = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    duration    = models.IntegerField(help_text="Duración en minutos")
+    price       = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active   = models.BooleanField(default=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.business.name}"
+
+
+class AvailabilitySlot(models.Model):
+    staff       = models.ForeignKey(BusinessMember, related_name='availability', on_delete=models.CASCADE)
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
+    start_time  = models.TimeField()
+    end_time    = models.TimeField()
+    is_active   = models.BooleanField(default=True)
