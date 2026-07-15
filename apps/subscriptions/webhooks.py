@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 
 from .models import StripeCustomer, WebhookEvent
 from .services import SubscriptionService
+from dashboard.tasks import  send_subscription_confirmation_email, send_subscription_cancellation_email, send_trial_started_email
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
@@ -110,7 +111,11 @@ def _handle_checkout_completed(session):
 
 
 def _handle_subscription_created(subscription):
-    SubscriptionService.sync_subscription_from_stripe(subscription)
+    sub = SubscriptionService.sync_subscription_from_stripe(subscription)
+    if sub.is_trialing:
+        send_trial_started_email(sub.user.email)
+    else:
+        send_subscription_confirmation_email.delay(sub.user.email, sub.plan.name if sub.plan else '' )
 
 
 def _handle_subscription_updated(subscription):
@@ -118,7 +123,8 @@ def _handle_subscription_updated(subscription):
 
 
 def _handle_subscription_deleted(subscription):
-    SubscriptionService.sync_subscription_from_stripe(subscription)
+    sub = SubscriptionService.sync_subscription_from_stripe(subscription)
+    send_subscription_cancellation_email.delay(sub.user.email)
 
 
 def _handle_invoice_paid(invoice):
@@ -140,25 +146,3 @@ def _handle_invoice_payment_failed(invoice):
 def _handle_trial_will_end(subscription):
     pass
 
-
-def _send_welcome_email(user, request=None):
-    from django.core.mail import send_mail
-    from django.contrib.auth.tokens import default_token_generator
-    from django.utils.http import urlsafe_base64_encode
-    from django.utils.encoding import force_bytes
-    from django.conf import settings as django_settings
-
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    token = default_token_generator.make_token(user)
-
-    base_url = getattr(django_settings, 'SITE_URL', None) \
-        or f"https://{getattr(django_settings, 'MAIN_DOMAIN', 'localhost')}".rstrip('/')
-    reset_url = f'{base_url}/accounts/password/reset/key/{uid}-{token}/'
-
-    send_mail(
-        subject='¡Bienvenido! Activa tu cuenta',
-        message=f'Hola,\n\nTu pago fue procesado. Establece tu contraseña aquí:\n{reset_url}',
-        from_email=django_settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-        fail_silently=True,
-    )
