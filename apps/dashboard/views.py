@@ -9,7 +9,6 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.subscriptions.models import StripeCustomer
 from apps.subscriptions.services import AccessService, SubscriptionService
-from apps.subscriptions.views import AccessService
 
 
 from .models import SubscriptionPlan, UserSettings

@@ -17,18 +17,37 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 @require_POST
 def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', '')
 
-    # Convertir a dict una sola vez aquí para todos los handlers
-    if hasattr(data, 'to_dict'):
-        data = data.to_dict()
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError:
+        logger.warning('Stripe webhook: payload inválido')
+        return JsonResponse({'error': 'Invalid payload'}, status=400)
+    except stripe.error.SignatureVerificationError:
+        logger.warning('Stripe webhook: firma inválida')
+        return JsonResponse({'error': 'Invalid signature'}, status=400)
+
+    event_id = event['id']
+    event_type = event['type']
+    data = event['data']['object']
+
+    # Idempotencia: ignorar eventos ya procesados
+    if WebhookEvent.objects.filter(stripe_event_id=event_id).exists():
+        logger.info(f'Webhook duplicado ignorado: {event_id}')
+        return JsonResponse({'status': 'already_processed'})
+    WebhookEvent.objects.create(stripe_event_id=event_id)
 
     handlers = {
-        'checkout.session.completed':        _handle_checkout_completed,
-        'customer.subscription.created':     _handle_subscription_created,
-        'customer.subscription.updated':     _handle_subscription_updated,
-        'customer.subscription.deleted':     _handle_subscription_deleted,
-        'invoice.paid':                      _handle_invoice_paid,
-        'invoice.payment_failed':            _handle_invoice_payment_failed,
+        'checkout.session.completed':           _handle_checkout_completed,
+        'customer.subscription.created':        _handle_subscription_created,
+        'customer.subscription.updated':        _handle_subscription_updated,
+        'customer.subscription.deleted':        _handle_subscription_deleted,
+        'invoice.paid':                         _handle_invoice_paid,
+        'invoice.payment_failed':               _handle_invoice_payment_failed,
         'customer.subscription.trial_will_end': _handle_trial_will_end,
     }
 
@@ -37,7 +56,7 @@ def stripe_webhook(request):
         try:
             handler(data)
         except Exception as e:
-            logger.exception(f"Error handling {event_type}: {e}")
+            logger.exception(f'Error handling {event_type}: {e}')
             return JsonResponse({'error': str(e)}, status=500)
         return JsonResponse({'status': 'processed'})
 
@@ -122,20 +141,24 @@ def _handle_trial_will_end(subscription):
     pass
 
 
-def _send_welcome_email(user):
+def _send_welcome_email(user, request=None):
     from django.core.mail import send_mail
     from django.contrib.auth.tokens import default_token_generator
     from django.utils.http import urlsafe_base64_encode
     from django.utils.encoding import force_bytes
+    from django.conf import settings as django_settings
 
-    uid   = urlsafe_base64_encode(force_bytes(user.pk))
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    reset_url = f"http://localhost:8000/accounts/password/reset/key/{uid}-{token}/"
+
+    base_url = getattr(django_settings, 'SITE_URL', None) \
+        or f"https://{getattr(django_settings, 'MAIN_DOMAIN', 'localhost')}".rstrip('/')
+    reset_url = f'{base_url}/accounts/password/reset/key/{uid}-{token}/'
 
     send_mail(
         subject='¡Bienvenido! Activa tu cuenta',
-        message=f"Hola,\n\nTu pago fue procesado. Establece tu contraseña aquí:\n{reset_url}",
-        from_email='noreply@tudominio.com',
+        message=f'Hola,\n\nTu pago fue procesado. Establece tu contraseña aquí:\n{reset_url}',
+        from_email=django_settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
         fail_silently=True,
     )

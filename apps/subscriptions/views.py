@@ -9,14 +9,6 @@ from apps.dashboard.models import SubscriptionPlan
 from .models import StripeCustomer
 from .services import AccessService, SubscriptionService
 
-@staticmethod
-def sync_subscription_from_stripe(subscription_data):
-    # Asegurar que siempre trabajamos con un dict
-    if hasattr(subscription_data, 'to_dict'):
-        subscription_data = subscription_data.to_dict()
-    
-    stripe_sub_id = subscription_data['id']
- 
 
 @login_required
 def subscription_page(request):
