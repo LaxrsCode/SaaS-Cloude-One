@@ -40,12 +40,9 @@
                 </div>
             </div>
             {% if subscription.is_active or subscription.is_trialing %}
-            <form method="POST" action="{% url 'dashboard:cancel_subscription' %}">
-                {% csrf_token %}
-                <button type="submit" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Manage billing</button>
-            </form>
+            <a href="{% url 'subscriptions:customer_portal' %}" class="text-sm px-4 py-1.5 border border-light-gray rounded text-gray hover:text-black hover:border-black transition-colors">Manage billing</a>
             {% elif not subscription.has_subscription %}
-            <form method="POST" action="{% url 'dashboard:start_trial' %}">
+            <form method="POST" action="{% url 'dashboard:subscribe_to_plan' 'pro' %}">
                 {% csrf_token %}
                 <button type="submit" class="text-sm px-4 py-2 bg-black text-white rounded hover:bg-dark-gray transition-colors">Start trial</button>
             </form>

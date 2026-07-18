@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_http_methods
 
 from apps.dashboard.models import SubscriptionPlan
 from .models import StripeCustomer
@@ -24,7 +24,6 @@ def subscription_page(request):
 
 
 @login_required
-@require_POST
 def create_checkout_session(request):
     plan_slug = request.POST.get('plan') or request.GET.get('plan', 'pro')
     plan = get_object_or_404(SubscriptionPlan, slug=plan_slug, is_active=True)

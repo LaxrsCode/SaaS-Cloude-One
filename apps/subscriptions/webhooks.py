@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 
 from .models import StripeCustomer, WebhookEvent
 from .services import SubscriptionService
-from dashboard.tasks import  send_subscription_confirmation_email, send_subscription_cancellation_email, send_trial_started_email
+from apps.dashboard.tasks import  send_subscription_confirmation_email, send_subscription_cancellation_email, send_trial_started_email
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
@@ -34,7 +34,9 @@ def stripe_webhook(request):
 
     event_id = event['id']
     event_type = event['type']
-    data = event['data']['object']
+    # Convertir a dict puro para que todos los handlers puedan usar .get() con seguridad
+    raw = event['data']['object']
+    data = raw.to_dict() if hasattr(raw, 'to_dict') else dict(raw)
 
     # Idempotencia: ignorar eventos ya procesados
     if WebhookEvent.objects.filter(stripe_event_id=event_id).exists():
@@ -113,9 +115,9 @@ def _handle_checkout_completed(session):
 def _handle_subscription_created(subscription):
     sub = SubscriptionService.sync_subscription_from_stripe(subscription)
     if sub.is_trialing:
-        send_trial_started_email(sub.user.email)
+        send_trial_started_email.delay(sub.user.email)
     else:
-        send_subscription_confirmation_email.delay(sub.user.email, sub.plan.name if sub.plan else '' )
+        send_subscription_confirmation_email.delay(sub.user.email, sub.plan.name if sub.plan else '')
 
 
 def _handle_subscription_updated(subscription):

@@ -88,10 +88,10 @@ class SubscriptionService:
 
         stripe_customer_obj = StripeCustomer.objects.get(stripe_customer_id=customer_id)
 
-        from django.utils import timezone as dj_timezone
+        from datetime import timezone as py_timezone
 
         def ts_to_dt(timestamp):
-            return datetime.fromtimestamp(timestamp, tz=dj_timezone.utc) if timestamp else None
+            return datetime.fromtimestamp(timestamp, tz=py_timezone.utc) if timestamp else None
 
         subscription, _created = Subscription.objects.update_or_create(
             stripe_subscription_id=stripe_sub_id,

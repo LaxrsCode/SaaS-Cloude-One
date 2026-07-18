@@ -56,7 +56,11 @@ def home(request):
 
 @require_http_methods(['GET'])
 def pricing(request):
-    return render(request, 'landing/pricing.html')
+    from apps.subscriptions.services import AccessService
+    sub_status = None
+    if request.user.is_authenticated:
+        sub_status = AccessService.get_subscription_status(request.user)
+    return render(request, 'landing/pricing.html', {'subscription': sub_status})
 
 
 @require_http_methods(['GET'])

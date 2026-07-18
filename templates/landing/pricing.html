@@ -35,9 +35,18 @@
 
             <div class="mt-10 flex flex-col sm:flex-row gap-4">
                 {% if user.is_authenticated %}
-                <a href="{% url 'subscriptions:subscription_page' %}" class="px-8 py-4 bg-black text-white hover:bg-dark-gray text-sm font-medium uppercase tracking-wider transition-colors text-center">
-                    Gestionar suscripción
-                </a>
+                    {% if subscription.is_active or subscription.is_trialing %}
+                    <a href="{% url 'dashboard:subscription_plans' %}" class="px-8 py-4 bg-black text-white hover:bg-dark-gray text-sm font-medium uppercase tracking-wider transition-colors text-center">
+                        Gestionar suscripción
+                    </a>
+                    {% else %}
+                    <form method="POST" action="{% url 'dashboard:subscribe_to_plan' 'pro' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="px-8 py-4 bg-black text-white hover:bg-dark-gray text-sm font-medium uppercase tracking-wider transition-colors text-center">
+                            Empezar prueba de 14 días
+                        </button>
+                    </form>
+                    {% endif %}
                 {% else %}
                 <a href="{% url 'account_signup' %}" class="px-8 py-4 bg-black text-white hover:bg-dark-gray text-sm font-medium uppercase tracking-wider transition-colors text-center">
                     Empezar prueba de 14 días
@@ -98,9 +107,18 @@
         <p class="mt-4 text-gray text-lg leading-relaxed">
             14 días gratis para comprobar si la plataforma ayuda a tu negocio a recibir más reservas y organizar mejor su presencia digital.
         </p>
+        {% if user.is_authenticated and not subscription.is_active and not subscription.is_trialing %}
+        <form method="POST" action="{% url 'dashboard:subscribe_to_plan' 'pro' %}" class="mt-10 inline-block">
+            {% csrf_token %}
+            <button type="submit" class="px-10 py-4 bg-white text-black hover:bg-light-gray text-sm font-medium uppercase tracking-wider transition-colors">
+                Empezar ahora
+            </button>
+        </form>
+        {% elif not user.is_authenticated %}
         <a href="{% url 'account_signup' %}" class="mt-10 inline-flex px-10 py-4 bg-white text-black hover:bg-light-gray text-sm font-medium uppercase tracking-wider transition-colors">
             Empezar ahora
         </a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

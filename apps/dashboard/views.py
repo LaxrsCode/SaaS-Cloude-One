@@ -74,6 +74,7 @@ def settings(request):
             'marketing': user_settings.notify_marketing,
         },
         'subscription': AccessService.get_subscription_status(request.user),
+        'has_stripe_customer': StripeCustomer.objects.filter(user=request.user).exists(),
     }
     return render(request, 'dashboard/settings.html', context)
 
@@ -81,9 +82,12 @@ def settings(request):
 @require_http_methods(['GET'])
 def subscription_plans(request):
     plans = SubscriptionPlan.objects.filter(is_active=True)
+    active_sub = AccessService.get_current_subscription(request.user)
     context = {
         'plans': plans,
         'subscription': AccessService.get_subscription_status(request.user),
+        'current_plan': active_sub.plan if active_sub else None,
+        'has_stripe_customer': StripeCustomer.objects.filter(user=request.user).exists(),
     }
     return render(request, 'dashboard/subscription_plans.html', context)
 
@@ -108,14 +112,12 @@ def subscribe_to_plan(request, plan_slug):
         return redirect('dashboard:subscription_plans')
 
     from django.urls import reverse
-    checkout_url = reverse('subscriptions:create_checkout_session') + f'?plan={plan.slug}'
+    checkout_url = reverse('subscriptions:create_checkout') + f'?plan={plan.slug}'
     return redirect(checkout_url)
 
 @login_required
 @require_http_methods(['POST'])
 def cancel_subscription(request):
-    from apps.subscriptions.views import SubscriptionService, AccessService
-
     sub = AccessService.get_current_subscription(request.user)
     if not sub:
         messages.warning(request, 'You do not have an active subscription to cancel.')
