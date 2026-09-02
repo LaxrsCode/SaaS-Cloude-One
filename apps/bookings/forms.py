@@ -84,3 +84,52 @@ class BookingForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+class BookingRequestForm(forms.Form):
+    service = forms.ModelChoiceField(
+        queryset=Service.objects.none(),
+        label='Servicio',
+        widget=forms.Select(attrs={'class': 'w-full border border-light-gray rounded px-3 py-2 text-sm'}),
+    )
+    staff = forms.ModelChoiceField(
+        queryset=BusinessMember.objects.none(),
+        label='Personal',
+        widget=forms.Select(attrs={'class': 'w-full border border-light-gray rounded px-3 py-2 text-sm'}),
+    )
+    start_datetime = forms.DateTimeField(
+        label='Fecha y hora',
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+    )
+    notes = forms.CharField(
+        label='Notas (opcional)',
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'w-full border border-light-gray rounded px-3 py-2 text-sm'}),
+    )
+
+    def __init__(self, *args, business=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.business = business
+        if business:
+            self.fields['service'].queryset = Service.objects.filter(business=business, is_active=True)
+            self.fields['staff'].queryset = BusinessMember.objects.filter(business=business, is_active=True)
+
+    def clean(self):
+        cleaned = super().clean()
+        service = cleaned.get('service')
+        staff = cleaned.get('staff')
+        start_datetime = cleaned.get('start_datetime')
+        if not all([service, staff, start_datetime]):
+            return cleaned
+        end_datetime = calculate_end_datetime(start_datetime, service)
+        cleaned['end_datetime'] = end_datetime
+        try:
+            validate_booking(
+                staff=staff,
+                service=service,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                is_new=True,
+            )
+        except ValidationError as exc:
+            raise forms.ValidationError(exc.messages)
+        return cleaned
